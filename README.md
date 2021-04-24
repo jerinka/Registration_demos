@@ -8,3 +8,15 @@
 
 ```KeypointStitch_demo.ipynb```
 
+## Input example
+
+![inputs](inputs.png)
+
+## Keypoint based register
+
+![keypoint based](keypoints.png)
+
+## ECC based
+
+![ECC based](ECC_registered.jpg)
+
