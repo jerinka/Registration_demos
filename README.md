@@ -1,4 +1,4 @@
-# registeration_ecc
+# registeration methods
 
 ## ECC based registration demo
 
