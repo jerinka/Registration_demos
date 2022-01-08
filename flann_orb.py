@@ -16,6 +16,7 @@ def fuse(moving, fixed):
     fuz[:,:,2] = cv2.cvtColor(fixed, cv2.COLOR_BGR2GRAY)
     show(fuz,win='fused',time=0)
     return fuz
+    
 def blend(fixed, moved):
     #import pdb;pdb.set_trace()
     black = np.where(moved==(0,0,0))
@@ -34,10 +35,13 @@ def keypoint_register(fixed, moving):
     """ Calcualtes transform matrix(M) bw fixed and moving, returns moved image and M"""
     MIN_MATCHES = 1
 
-    orb = cv2.ORB_create(nfeatures=5000)
+    orb = cv2.ORB_create(nfeatures=5000, scaleFactor = 1.2, nlevels = 8, edgeThreshold = 8, firstLevel = 0,
+                         WTA_K = 2, scoreType = cv2.FAST_FEATURE_DETECTOR_TYPE_9_16, 	patchSize = 15, fastThreshold = 20 )
+                         
     kp1, des1 = orb.detectAndCompute(moving, None)
     kp2, des2 = orb.detectAndCompute(fixed, None)
-
+    #import pdb;pdb.set_trace()
+    
     index_params = dict(algorithm=6,
                         table_number=6,
                         key_size=12,
@@ -82,9 +86,9 @@ def keypoint_register(fixed, moving):
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("--fixed"  , default='crops/5.png', help="path for image containing the object")
-    parser.add_argument("--moving" , default='crops/4.png', help="path for the object image")
-    
+    parser.add_argument("--fixed"  , default='crops/18.png', help="path for image containing the object")
+    parser.add_argument("--moving" , default='crops/19.png', help="path for the object image")
+
     args = parser.parse_args()
     
     fixed = cv2.imread(args.fixed)
