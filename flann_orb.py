@@ -1,5 +1,5 @@
 import argparse
-
+import os
 import cv2
 import numpy as np
 
@@ -16,10 +16,23 @@ def fuse(moving, fixed):
     fuz[:,:,2] = cv2.cvtColor(fixed, cv2.COLOR_BGR2GRAY)
     show(fuz,win='fused',time=0)
     return fuz
+def blend(fixed, moved):
+    #import pdb;pdb.set_trace()
+    black = np.where(moved==(0,0,0))
+    blended = moved.copy()
+    blended[black]=fixed[black]
+    show(blended,win='blended',time=0)
+    return blended
 
+def concat(fixed, moved):
+    #import pdb;pdb.set_trace()
+    concated = np.concatenate((fixed,moved),axis=1)
+    show(concated,win='concated',time=0)
+    return concated
+    
 def keypoint_register(fixed, moving):
-
-    MIN_MATCHES = 50
+    """ Calcualtes transform matrix(M) bw fixed and moving, returns moved image and M"""
+    MIN_MATCHES = 1
 
     orb = cv2.ORB_create(nfeatures=5000)
     kp1, des1 = orb.detectAndCompute(moving, None)
@@ -51,32 +64,46 @@ def keypoint_register(fixed, moving):
 
     imMatches = cv2.drawMatchesKnn(moving, kp1, fixed, kp2,matches,None,**draw_params) 
     show(imMatches,win='imMatches',time=0)
+    print('num matches:',len(good_matches))
     
     
     if len(good_matches) > MIN_MATCHES:
         src_points = np.float32([kp1[m.queryIdx].pt for m in good_matches]).reshape(-1, 1, 2)
         dst_points = np.float32([kp2[m.trainIdx].pt for m in good_matches]).reshape(-1, 1, 2)
-        m, mask = cv2.findHomography(src_points, dst_points, cv2.RANSAC, 5.0)
-        moved = cv2.warpPerspective(moving, m, (fixed.shape[1], fixed.shape[0]))
+        M, mask = cv2.findHomography(src_points, dst_points, cv2.RANSAC, 5.0)
+        moved = cv2.warpPerspective(moving, M, (fixed.shape[1], fixed.shape[0]))
     else:
         print('registration failed!')
         moved=None
-    return moved
+        M=None
+    return moved, M
     
     
 
 if __name__=='__main__':
     parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("--src" , default='images/im2.jpg', help="path for the object image")
-    parser.add_argument("--dest", default='images/im1.jpg', help="path for image containing the object")
-    args = parser.parse_args()
-
-    moving = cv2.imread(args.src)
-    fixed = cv2.imread(args.dest)
+    parser.add_argument("--fixed"  , default='crops/5.png', help="path for image containing the object")
+    parser.add_argument("--moving" , default='crops/4.png', help="path for the object image")
     
-    moved = keypoint_register(fixed, moving)
+    args = parser.parse_args()
+    
+    fixed = cv2.imread(args.fixed)
+    moving = cv2.imread(args.moving)
+
+    moved, M = keypoint_register(fixed, moving)
+    
+    outfile = os.path.basename(args.moving)
+    outfile = os.path.splitext(outfile)[0]
+    outfile = os.path.join('output', outfile)
+    
+    cv2.imwrite(outfile+'_moved.jpg',moved)
     
     fuz = fuse(fixed, moved)
-    cv2.imwrite('output/fused.jpg',fuz)
+    cv2.imwrite(outfile+'_fused.jpg',fuz)
     
+    blended = blend(fixed, moved)
+    cv2.imwrite(outfile+'_blended.jpg',blended)
+    
+    concated = concat(fixed, moved)
+    cv2.imwrite(outfile+'_concated.jpg',concated)
     
