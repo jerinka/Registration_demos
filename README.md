@@ -1,4 +1,4 @@
-# Registeration Methods
+# Registration Methods
 
 ## ECC based registration notebook
 
