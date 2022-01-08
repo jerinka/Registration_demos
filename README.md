@@ -1,22 +1,18 @@
 # Registeration Methods
 
-## ECC based registration demo
+## ECC based registration notebook
 
 ```Ecc_demo.ipynb```
 
-## KeyPoint based stitching demo
+## KeyPoint based stitching notebook
 
 ```KeypointStitch_demo.ipynb```
 
-## Input example
+## Keypoint: flann and orb demo
+```python3 flann_orb.py```
 
-![inputs](inputs.png)
+## Sample output
 
-## Keypoint based register
+![inputs](output/fused.jpg)
 
-![keypoint based](keypoints.png)
-
-## ECC based
-
-![ECC based](ECC_registered.jpg)
 
