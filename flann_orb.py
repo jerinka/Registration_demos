@@ -35,12 +35,20 @@ def keypoint_register(fixed, moving):
     """ Calcualtes transform matrix(M) bw fixed and moving, returns moved image and M"""
     MIN_MATCHES = 1
 
-    orb = cv2.ORB_create(nfeatures=5000, scaleFactor = 1.2, nlevels = 8, edgeThreshold = 8, firstLevel = 0,
-                         WTA_K = 2, scoreType = cv2.FAST_FEATURE_DETECTOR_TYPE_9_16, 	patchSize = 15, fastThreshold = 20 )
+    orb = cv2.ORB_create(nfeatures=5000, scaleFactor = 1.2, nlevels = 1,
+                         edgeThreshold = 8, firstLevel = 0,
+                         WTA_K = 2, scoreType = cv2.FAST_FEATURE_DETECTOR_TYPE_9_16, 	
+                         patchSize = 30, fastThreshold = 20 )
                          
     kp1, des1 = orb.detectAndCompute(moving, None)
     kp2, des2 = orb.detectAndCompute(fixed, None)
     #import pdb;pdb.set_trace()
+    fixed_kp = cv2.drawKeypoints(moving,kp1,None,color=(0,255,0))
+    moving_kp = cv2.drawKeypoints(fixed,kp2,None,color=(0,255,0))
+    show(fixed_kp,win='fixed_kp',time=30,destroy=False )
+    show(moving_kp,win='moving_kp',time=0)
+    cv2.destroyWindow('moving_kp')
+
     
     index_params = dict(algorithm=6,
                         table_number=6,
