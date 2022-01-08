@@ -13,8 +13,11 @@
 
 ## Demo Results
 
+### fixed
 ![fixed](images/im1.jpg)
+### moving
 ![moving](images/im2.jpg)
+### moved (fused with fixed)
 ![moved](output/fused.jpg)
 
 
